@@ -60,8 +60,28 @@ initialize_database()
 # HEADER
 # -----------------------------
 
-st.title("AUTO TECK LLC")
-st.subheader("Vehicle Reconditioning Manager")
+if st.session_state.selected_vehicle is None:
+
+    st.title("AUTO TECK LLC")
+    st.subheader("Vehicle Reconditioning Manager")
+
+else:
+
+    col1, col2 = st.columns([1, 8])
+
+    with col1:
+
+        if st.button("🏠 Home"):
+
+            st.session_state.selected_vehicle = None
+            st.session_state.search_vehicle = False
+            st.session_state.create_vehicle = False
+            st.rerun()
+
+    with col2:
+
+        st.title("AUTO TECK LLC")
+        st.subheader("Vehicle Reconditioning Manager")
 
 st.divider()
 
@@ -71,24 +91,21 @@ st.divider()
 # VEHICLE COUNT
 # -----------------------------
 
-vehicles = load_vehicles()
+if st.session_state.selected_vehicle is None:
 
+    vehicles = load_vehicles()
 
-if len(vehicles) == 0:
+    if len(vehicles) == 0:
 
-    st.info(
-        "No vehicles registered yet."
-    )
+        st.info("No vehicles registered yet.")
 
-else:
+    else:
 
-    st.success(
-        f"Registered vehicles: {len(vehicles)}"
-    )
+        st.success(
+            f"Registered Vehicles: {len(vehicles)}"
+        )
 
-
-
-st.divider()
+    st.divider()
 
 
 
@@ -96,29 +113,27 @@ st.divider()
 # MAIN OPTIONS
 # -----------------------------
 
-option1, option2 = st.columns(2)
+if st.session_state.selected_vehicle is None:
 
+    option1, option2 = st.columns(2)
 
+    with option1:
 
-with option1:
+        if st.button(
+            "🔍 Search Vehicle",
+            use_container_width=True
+        ):
 
-    if st.button(
-        "🔍 Search Vehicle",
-        use_container_width=True
-    ):
+            st.session_state.search_vehicle = True
 
-        st.session_state.search_vehicle = True
+    with option2:
 
+        if st.button(
+            "➕ Create New Vehicle",
+            use_container_width=True
+        ):
 
-
-with option2:
-
-    if st.button(
-        "➕ Create New Vehicle",
-        use_container_width=True
-    ):
-
-        st.session_state.create_vehicle = True
+            st.session_state.create_vehicle = True
 
 
 
@@ -126,7 +141,11 @@ with option2:
 # SEARCH VEHICLE
 # -----------------------------
 
-if st.session_state.search_vehicle:
+if (
+    st.session_state.selected_vehicle is None
+    and
+    st.session_state.search_vehicle
+):
 
 
     st.divider()
@@ -192,7 +211,11 @@ if st.session_state.selected_vehicle is not None:
 # CREATE VEHICLE
 # -----------------------------
 
-if st.session_state.create_vehicle:
+if (
+    st.session_state.selected_vehicle is None
+    and
+    st.session_state.create_vehicle
+):
 
 
     st.divider()
