@@ -68,9 +68,14 @@ def show_vehicle_page(vehicle):
         )
 
 
+
     st.divider()
 
 
+
+    # ----------------------------------------------------
+    # LOAD CHECKLIST
+    # ----------------------------------------------------
 
     saved_checklist = get_vehicle_checklist(
         vehicle["stock_number"]
@@ -78,8 +83,45 @@ def show_vehicle_page(vehicle):
 
 
 
-    total_items = 0
-    completed_items = 0
+    # ----------------------------------------------------
+    # PDF REPORT BUTTON
+    # ----------------------------------------------------
+
+    st.subheader(
+        "Reports"
+    )
+
+
+    if st.button(
+        "📄 Generate PDF Report",
+        use_container_width=True
+    ):
+
+
+        pdf_file = create_pdf(
+            vehicle,
+            saved_checklist
+        )
+
+
+        st.download_button(
+
+            label="⬇ Download PDF",
+
+            data=pdf_file,
+
+            file_name=
+            f"{vehicle['stock_number']}_Report.pdf",
+
+            mime="application/pdf",
+
+            use_container_width=True
+
+        )
+
+
+
+    st.divider()
 
 
 
@@ -87,10 +129,14 @@ def show_vehicle_page(vehicle):
     # CHECKLIST
     # ----------------------------------------------------
 
-
     st.subheader(
         "Reconditioning Checklist"
     )
+
+
+    total_items = 0
+
+    completed_items = 0
 
 
 
@@ -105,13 +151,20 @@ def show_vehicle_page(vehicle):
 
 
             existing = saved_checklist[
+
                 saved_checklist["item"] == item
+
             ]
 
 
             if (
+
                 not existing.empty
-                and existing.iloc[0]["status"] == "Completed"
+
+                and
+
+                existing.iloc[0]["status"] == "Completed"
+
             ):
 
                 category_completed += 1
@@ -133,14 +186,19 @@ def show_vehicle_page(vehicle):
                 total_items += 1
 
 
+
                 saved_status = "Pending"
+
                 saved_notes = ""
+
                 saved_date = date.today()
 
 
 
                 existing = saved_checklist[
+
                     saved_checklist["item"] == item
+
                 ]
 
 
@@ -175,6 +233,7 @@ def show_vehicle_page(vehicle):
                 )
 
 
+
                 with c1:
 
                     st.write(item)
@@ -184,7 +243,7 @@ def show_vehicle_page(vehicle):
                 with c2:
 
 
-                    options=[
+                    options = [
 
                         "Pending",
                         "In Progress",
@@ -199,11 +258,10 @@ def show_vehicle_page(vehicle):
 
                         options,
 
-                        index=options.index(
-                            saved_status
-                        ),
+                        index=options.index(saved_status),
 
-                        key=f"{vehicle['stock_number']}_{item}"
+                        key=
+                        f"{vehicle['stock_number']}_{item}"
 
                     )
 
@@ -224,7 +282,8 @@ def show_vehicle_page(vehicle):
 
                         value=saved_date,
 
-                        key=f"date_{vehicle['stock_number']}_{item}"
+                        key=
+                        f"date_{vehicle['stock_number']}_{item}"
 
                     )
 
@@ -235,7 +294,8 @@ def show_vehicle_page(vehicle):
 
                         value=saved_notes,
 
-                        key=f"notes_{vehicle['stock_number']}_{item}"
+                        key=
+                        f"notes_{vehicle['stock_number']}_{item}"
 
                     )
 
@@ -245,9 +305,13 @@ def show_vehicle_page(vehicle):
 
                     status != saved_status
 
-                    or notes != saved_notes
+                    or
 
-                    or str(item_date) != str(saved_date)
+                    notes != saved_notes
+
+                    or
+
+                    str(item_date) != str(saved_date)
 
                 ):
 
@@ -281,9 +345,8 @@ def show_vehicle_page(vehicle):
 
 
     # ----------------------------------------------------
-    # PROGRESS
+    # OVERALL PROGRESS
     # ----------------------------------------------------
-
 
     st.divider()
 
@@ -313,45 +376,3 @@ def show_vehicle_page(vehicle):
         f"({int(progress*100)}%)"
 
     )
-
-
-
-    # ----------------------------------------------------
-    # PDF REPORT
-    # ----------------------------------------------------
-
-
-    st.divider()
-
-
-    st.subheader(
-        "Reports"
-    )
-
-
-
-    if st.button(
-        "📄 Generate PDF Report"
-    ):
-
-
-        pdf_file = create_pdf(
-
-            vehicle,
-
-            saved_checklist
-
-        )
-
-
-        st.download_button(
-
-            label="⬇ Download PDF",
-
-            data=pdf_file,
-
-            file_name=f"{vehicle['stock_number']}_Report.pdf",
-
-            mime="application/pdf"
-
-        )
