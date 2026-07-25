@@ -3,6 +3,37 @@ import streamlit as st
 from modules.item_editor import edit_item
 
 
+# ----------------------------------
+# CATEGORY STYLE
+# ----------------------------------
+
+st.markdown(
+    """
+    <style>
+
+    div[data-testid="stExpander"] > details > summary {
+
+        background-color: #e9ecef;
+        border-radius: 8px;
+        padding: 10px;
+        font-weight: bold;
+
+    }
+
+
+    div[data-testid="stExpander"] > details > summary:hover {
+
+        background-color: #d6d8db;
+
+    }
+
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 
 def get_category_progress(
     items,

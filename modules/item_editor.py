@@ -65,8 +65,8 @@ def edit_item(
 
 
     with st.expander(
-        f"{icon} {item}",
-        expanded=False
+    f"**{icon} {item}**",
+    expanded=False
     ):
 
 
