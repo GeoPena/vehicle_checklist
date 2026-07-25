@@ -1,23 +1,59 @@
 import streamlit as st
-import pandas as pd
-from datetime import date
-
 
 from modules.checklist import CHECKLIST
 
-
 from modules.storage import (
-    save_checklist_item,
     get_vehicle_checklist
 )
 
+from modules.category_view import show_category
 
 from modules.pdf_report import create_pdf
 
 
 
+def calculate_progress(
+    saved_checklist
+):
+
+    total = 0
+    completed = 0
+
+
+    for category, items in CHECKLIST.items():
+
+        for item in items:
+
+            total += 1
+
+
+            existing = saved_checklist[
+
+                saved_checklist["item"] == item
+
+            ]
+
+
+            if not existing.empty:
+
+
+                if existing.iloc[0]["status"] == "Completed":
+
+                    completed += 1
+
+
+
+    return completed, total
+
+
+
+
 def show_vehicle_page(vehicle):
 
+
+    # --------------------------------------
+    # HEADER
+    # --------------------------------------
 
     st.title(
         "🚗 Vehicle Reconditioning Checklist"
@@ -25,23 +61,31 @@ def show_vehicle_page(vehicle):
 
 
 
-    # ----------------------------------------------------
+    # --------------------------------------
     # VEHICLE INFORMATION
-    # ----------------------------------------------------
+    # --------------------------------------
+
+    st.subheader(
+        "Vehicle Information"
+    )
+
 
     c1, c2, c3 = st.columns(3)
+
 
 
     with c1:
 
         st.metric(
-            "Stock",
+            "Stock Number",
             vehicle["stock_number"]
         )
+
 
         st.write(
             f"**VIN:** {vehicle['vin']}"
         )
+
 
 
     with c2:
@@ -51,9 +95,11 @@ def show_vehicle_page(vehicle):
             vehicle["year"]
         )
 
+
         st.write(
             f"**Make:** {vehicle['make']}"
         )
+
 
 
     with c3:
@@ -62,6 +108,7 @@ def show_vehicle_page(vehicle):
             "Mileage",
             vehicle["mileage"]
         )
+
 
         st.write(
             f"**Model:** {vehicle['model']}"
@@ -73,19 +120,21 @@ def show_vehicle_page(vehicle):
 
 
 
-    # ----------------------------------------------------
+    # --------------------------------------
     # LOAD CHECKLIST
-    # ----------------------------------------------------
+    # --------------------------------------
 
     saved_checklist = get_vehicle_checklist(
+
         vehicle["stock_number"]
+
     )
 
 
 
-    # ----------------------------------------------------
-    # PDF REPORT BUTTON
-    # ----------------------------------------------------
+    # --------------------------------------
+    # REPORT BUTTON
+    # --------------------------------------
 
     st.subheader(
         "Reports"
@@ -93,14 +142,20 @@ def show_vehicle_page(vehicle):
 
 
     if st.button(
+
         "📄 Generate PDF Report",
+
         use_container_width=True
+
     ):
 
 
         pdf_file = create_pdf(
+
             vehicle,
+
             saved_checklist
+
         )
 
 
@@ -125,238 +180,53 @@ def show_vehicle_page(vehicle):
 
 
 
-    # ----------------------------------------------------
+    # --------------------------------------
     # CHECKLIST
-    # ----------------------------------------------------
+    # --------------------------------------
 
     st.subheader(
         "Reconditioning Checklist"
     )
 
 
-    total_items = 0
-
-    completed_items = 0
-
-
 
     for category, items in CHECKLIST.items():
 
 
-        category_completed = 0
+        show_category(
 
+            vehicle,
 
+            category,
 
-        for item in items:
+            items,
 
+            saved_checklist
 
-            existing = saved_checklist[
+        )
 
-                saved_checklist["item"] == item
 
-            ]
 
-
-            if (
-
-                not existing.empty
-
-                and
-
-                existing.iloc[0]["status"] == "Completed"
-
-            ):
-
-                category_completed += 1
-
-
-
-        with st.expander(
-
-            f"📂 {category} "
-            f"({category_completed}/{len(items)})"
-
-        ):
-
-
-
-            for item in items:
-
-
-                total_items += 1
-
-
-
-                saved_status = "Pending"
-
-                saved_notes = ""
-
-                saved_date = date.today()
-
-
-
-                existing = saved_checklist[
-
-                    saved_checklist["item"] == item
-
-                ]
-
-
-
-                if not existing.empty:
-
-
-                    saved_status = existing.iloc[0]["status"]
-
-                    saved_notes = existing.iloc[0]["notes"]
-
-
-
-                    try:
-
-                        saved_date = date.fromisoformat(
-
-                            str(
-                                existing.iloc[0]["date"]
-                            )
-
-                        )
-
-                    except:
-
-                        saved_date = date.today()
-
-
-
-                c1,c2,c3 = st.columns(
-                    [3,2,3]
-                )
-
-
-
-                with c1:
-
-                    st.write(item)
-
-
-
-                with c2:
-
-
-                    options = [
-
-                        "Pending",
-                        "In Progress",
-                        "Completed"
-
-                    ]
-
-
-                    status = st.selectbox(
-
-                        "Status",
-
-                        options,
-
-                        index=options.index(saved_status),
-
-                        key=
-                        f"{vehicle['stock_number']}_{item}"
-
-                    )
-
-
-
-                    if status == "Completed":
-
-                        completed_items += 1
-
-
-
-                with c3:
-
-
-                    item_date = st.date_input(
-
-                        "Date",
-
-                        value=saved_date,
-
-                        key=
-                        f"date_{vehicle['stock_number']}_{item}"
-
-                    )
-
-
-                    notes = st.text_input(
-
-                        "Notes",
-
-                        value=saved_notes,
-
-                        key=
-                        f"notes_{vehicle['stock_number']}_{item}"
-
-                    )
-
-
-
-                if (
-
-                    status != saved_status
-
-                    or
-
-                    notes != saved_notes
-
-                    or
-
-                    str(item_date) != str(saved_date)
-
-                ):
-
-
-                    save_checklist_item(
-
-                        {
-
-                            "stock_number":
-                                vehicle["stock_number"],
-
-                            "category":
-                                category,
-
-                            "item":
-                                item,
-
-                            "status":
-                                status,
-
-                            "date":
-                                str(item_date),
-
-                            "notes":
-                                notes
-
-                        }
-
-                    )
-
-
-
-    # ----------------------------------------------------
+    # --------------------------------------
     # OVERALL PROGRESS
-    # ----------------------------------------------------
+    # --------------------------------------
 
     st.divider()
+
+
+    completed, total = calculate_progress(
+
+        saved_checklist
+
+    )
 
 
     progress = 0
 
 
-    if total_items > 0:
+    if total > 0:
 
-        progress = completed_items / total_items
+        progress = completed / total
 
 
 
@@ -365,14 +235,16 @@ def show_vehicle_page(vehicle):
     )
 
 
+
     st.progress(
         progress
     )
 
 
+
     st.success(
 
-        f"{completed_items}/{total_items} completed "
+        f"{completed}/{total} completed "
         f"({int(progress*100)}%)"
 
     )
