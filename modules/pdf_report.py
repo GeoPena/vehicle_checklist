@@ -350,7 +350,7 @@ def create_pdf(vehicle, checklist):
                 "FONTSIZE",
                 (0, 0),
                 (-1, -1),
-                5
+                6
             ),
 
             (
@@ -385,14 +385,14 @@ def create_pdf(vehicle, checklist):
                 "TOPPADDING",
                 (0, 0),
                 (-1, -1),
-                1
+                2
             ),
 
             (
                 "BOTTOMPADDING",
                 (0, 0),
                 (-1, -1),
-                1
+                2
             ),
 
             (
