@@ -9,7 +9,11 @@ from reportlab.platypus import (
     TableStyle
 )
 
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.styles import (
+    getSampleStyleSheet,
+    ParagraphStyle
+)
+
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib import colors
@@ -17,12 +21,9 @@ from reportlab.lib import colors
 from modules.checklist import CHECKLIST
 
 
-
 def create_pdf(vehicle, checklist):
 
-
     buffer = BytesIO()
-
 
     doc = SimpleDocTemplate(
 
@@ -30,20 +31,14 @@ def create_pdf(vehicle, checklist):
 
         pagesize=letter,
 
-        rightMargin=20,
-
-        leftMargin=20,
-
-        topMargin=20,
-
-        bottomMargin=20
+        leftMargin=18,
+        rightMargin=18,
+        topMargin=18,
+        bottomMargin=18
 
     )
 
-
     styles = getSampleStyleSheet()
-
-
 
     title_style = ParagraphStyle(
 
@@ -51,15 +46,13 @@ def create_pdf(vehicle, checklist):
 
         parent=styles["Title"],
 
-        fontSize=14,
-
         alignment=TA_CENTER,
 
-        spaceAfter=3
+        fontSize=13,
+
+        spaceAfter=2
 
     )
-
-
 
     heading_style = ParagraphStyle(
 
@@ -67,15 +60,13 @@ def create_pdf(vehicle, checklist):
 
         parent=styles["Heading2"],
 
-        fontSize=9,
+        fontSize=8,
 
-        spaceBefore=3,
+        spaceBefore=2,
 
-        spaceAfter=3
+        spaceAfter=2
 
     )
-
-
 
     small_style = ParagraphStyle(
 
@@ -83,22 +74,17 @@ def create_pdf(vehicle, checklist):
 
         parent=styles["Normal"],
 
-        fontSize=6,
+        fontSize=5.5,
 
-        leading=7
+        leading=6
 
     )
 
-
-
     elements = []
 
-
-
-    # =================================================
+    # =====================================================
     # HEADER
-    # =================================================
-
+    # =====================================================
 
     elements.append(
 
@@ -112,7 +98,6 @@ def create_pdf(vehicle, checklist):
 
     )
 
-
     elements.append(
 
         Paragraph(
@@ -124,7 +109,6 @@ def create_pdf(vehicle, checklist):
         )
 
     )
-
 
     elements.append(
 
@@ -138,17 +122,13 @@ def create_pdf(vehicle, checklist):
 
     )
 
-
     elements.append(
-        Spacer(1,5)
+        Spacer(1,4)
     )
 
-
-
-    # =================================================
+    # =====================================================
     # VEHICLE IDENTIFICATION
-    # =================================================
-
+    # =====================================================
 
     elements.append(
 
@@ -161,8 +141,6 @@ def create_pdf(vehicle, checklist):
         )
 
     )
-
-
 
     vehicle_data = [
 
@@ -194,17 +172,13 @@ def create_pdf(vehicle, checklist):
 
     ]
 
-
-
     vehicle_table = Table(
 
         vehicle_data,
 
-        colWidths=[45,75,45,55,45,220]
+        colWidths=[42,72,42,52,42,225]
 
     )
-
-
 
     vehicle_table.setStyle(
 
@@ -212,69 +186,19 @@ def create_pdf(vehicle, checklist):
 
             [
 
-                (
-                    "GRID",
-                    (0,0),
-                    (-1,-1),
-                    0.25,
-                    colors.black
-                ),
+                ("GRID",(0,0),(-1,-1),0.25,colors.black),
 
+                ("BACKGROUND",(0,0),(0,-1),colors.HexColor("#DDDDDD")),
+                ("BACKGROUND",(2,0),(2,-1),colors.HexColor("#DDDDDD")),
+                ("BACKGROUND",(4,0),(4,-1),colors.HexColor("#DDDDDD")),
 
-                (
-                    "BACKGROUND",
-                    (0,0),
-                    (0,-1),
-                    colors.lightgrey
-                ),
+                ("FONTNAME",(0,0),(0,-1),"Helvetica-Bold"),
+                ("FONTNAME",(2,0),(2,-1),"Helvetica-Bold"),
+                ("FONTNAME",(4,0),(4,-1),"Helvetica-Bold"),
 
+                ("FONTSIZE",(0,0),(-1,-1),6),
 
-                (
-                    "BACKGROUND",
-                    (2,0),
-                    (2,-1),
-                    colors.lightgrey
-                ),
-
-
-                (
-                    "BACKGROUND",
-                    (4,0),
-                    (4,-1),
-                    colors.lightgrey
-                ),
-
-
-                (
-                    "FONTNAME",
-                    (0,0),
-                    (0,-1),
-                    "Helvetica-Bold"
-                ),
-
-
-                (
-                    "FONTNAME",
-                    (2,0),
-                    (2,-1),
-                    "Helvetica-Bold"
-                ),
-
-
-                (
-                    "FONTNAME",
-                    (4,0),
-                    (4,-1),
-                    "Helvetica-Bold"
-                ),
-
-
-                (
-                    "FONTSIZE",
-                    (0,0),
-                    (-1,-1),
-                    7
-                )
+                ("VALIGN",(0,0),(-1,-1),"MIDDLE")
 
             ]
 
@@ -282,22 +206,15 @@ def create_pdf(vehicle, checklist):
 
     )
 
-
-
     elements.append(vehicle_table)
 
-
-
     elements.append(
-        Spacer(1,5)
+        Spacer(1,4)
     )
 
-
-
-    # =================================================
+    # =====================================================
     # VEHICLE RECONDITIONING
-    # =================================================
-
+    # =====================================================
 
     elements.append(
 
@@ -311,54 +228,45 @@ def create_pdf(vehicle, checklist):
 
     )
 
-
-
     all_rows = []
 
+    completed = 0
+    in_progress = 0
 
+    total_items = sum(
+        len(items)
+        for items in CHECKLIST.values()
+    )
 
     for category, items in CHECKLIST.items():
 
+        # True = Category Header
 
         all_rows.append(
 
             [
 
                 category.upper(),
-
                 "",
-
-                ""
+                "",
+                True
 
             ]
 
         )
 
-
-
         for item in items:
 
-
             existing = checklist[
-
                 checklist["item"] == item
-
             ]
 
-
-
             status = ""
-
             info = ""
-
-
 
             if not existing.empty:
 
-
                 row = existing.iloc[0]
-
-
 
                 if row["status"] == "Completed":
 
@@ -366,7 +274,7 @@ def create_pdf(vehicle, checklist):
 
                     info = str(row["date"])
 
-
+                    completed += 1
 
                 elif row["status"] == "In Progress":
 
@@ -374,159 +282,168 @@ def create_pdf(vehicle, checklist):
 
                     info = str(row["notes"])
 
+                    in_progress += 1
 
+            # False = Normal row
 
             all_rows.append(
 
                 [
 
                     item,
-
                     status,
-
-                    info
+                    info,
+                    False
 
                 ]
 
             )
 
+    pending = total_items - completed - in_progress
 
+    # ------------------------------------------
+    # Divide into 3 balanced columns
+    # ------------------------------------------
 
-    # -----------------------------------------
-    # Split into 3 balanced columns
-    # -----------------------------------------
+    total_rows = len(all_rows)
 
+    rows_per_column = (total_rows + 2) // 3
 
-    total = len(all_rows)
+    column1 = all_rows[:rows_per_column]
 
-
-    size = total // 3
-
-
-    columns = [
-
-        all_rows[:size],
-
-        all_rows[size:size*2],
-
-        all_rows[size*2:]
-
+    column2 = all_rows[
+        rows_per_column:rows_per_column*2
     ]
 
+    column3 = all_rows[
+        rows_per_column*2:
+    ]
 
+     # =====================================================
+    # CREATE A COLUMN
+    # =====================================================
 
     def create_column(rows):
 
+        # Solo las tres columnas visibles
+        display_rows = [row[:3] for row in rows]
 
         table = Table(
 
-            rows,
+            display_rows,
 
-            colWidths=[90,25,55]
+            colWidths=[90, 18, 55]
 
         )
-
-
 
         commands = [
 
             (
-
                 "GRID",
-
-                (0,0),
-
-                (-1,-1),
-
-                0.2,
-
+                (0, 0),
+                (-1, -1),
+                0.20,
                 colors.black
-
             ),
 
-
             (
-
                 "FONTSIZE",
-
-                (0,0),
-
-                (-1,-1),
-
-                5.5
-
+                (0, 0),
+                (-1, -1),
+                5
             ),
 
+            (
+                "LEADING",
+                (0, 0),
+                (-1, -1),
+                5.5
+            ),
 
             (
-
                 "VALIGN",
-
-                (0,0),
-
-                (-1,-1),
-
+                (0, 0),
+                (-1, -1),
                 "MIDDLE"
+            ),
 
+            (
+                "LEFTPADDING",
+                (0, 0),
+                (-1, -1),
+                2
+            ),
+
+            (
+                "RIGHTPADDING",
+                (0, 0),
+                (-1, -1),
+                2
+            ),
+
+            (
+                "TOPPADDING",
+                (0, 0),
+                (-1, -1),
+                1
+            ),
+
+            (
+                "BOTTOMPADDING",
+                (0, 0),
+                (-1, -1),
+                1
+            ),
+
+            (
+                "BACKGROUND",
+                (0, 0),
+                (-1, -1),
+                colors.white
+            ),
+
+            (
+                "TEXTCOLOR",
+                (0, 0),
+                (-1, -1),
+                colors.black
             )
 
         ]
 
-
-
+        # Solo las categorías llevan fondo negro
         for index, row in enumerate(rows):
 
-
-            if row[1] == "" and row[2] == "":
-
+            if row[3]:
 
                 commands.extend(
 
                     [
 
                         (
-
                             "BACKGROUND",
-
-                            (0,index),
-
-                            (-1,index),
-
+                            (0, index),
+                            (-1, index),
                             colors.black
-
                         ),
 
-
                         (
-
                             "TEXTCOLOR",
-
-                            (0,index),
-
-                            (-1,index),
-
+                            (0, index),
+                            (-1, index),
                             colors.white
-
                         ),
 
-
                         (
-
                             "FONTNAME",
-
-                            (0,index),
-
-                            (-1,index),
-
+                            (0, index),
+                            (-1, index),
                             "Helvetica-Bold"
-
                         )
 
                     ]
 
                 )
-
-
 
         table.setStyle(
 
@@ -534,20 +451,17 @@ def create_pdf(vehicle, checklist):
 
         )
 
-
-
         return table
 
 
-
-    table1 = create_column(columns[0])
-
-    table2 = create_column(columns[1])
-
-    table3 = create_column(columns[2])
+    table1 = create_column(column1)
+    table2 = create_column(column2)
+    table3 = create_column(column3)
 
 
-
+    # =====================================================
+    # MAIN 3-COLUMN TABLE
+    # =====================================================
 
     final_table = Table(
 
@@ -556,64 +470,75 @@ def create_pdf(vehicle, checklist):
             [
 
                 table1,
-
                 table2,
-
                 table3
 
             ]
 
         ],
 
-        colWidths=[175,175,175]
+        colWidths=[175, 175, 175]
 
     )
 
+
+    final_table.setStyle(
+
+        TableStyle(
+
+            [
+
+                (
+                    "VALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "TOP"
+                ),
+
+                (
+                    "LEFTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    0
+                ),
+
+                (
+                    "RIGHTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    4
+                ),
+
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    0
+                ),
+
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    0
+                )
+
+            ]
+
+        )
+
+    )
 
 
     elements.append(final_table)
 
-
-
     elements.append(
-
-        Spacer(1,8)
-
+        Spacer(1, 4)
     )
 
-
-
-    # =================================================
+     # =====================================================
     # OVERALL STATUS
-    # =================================================
-
-
-    completed = 0
-
-    in_progress = 0
-
-    pending = 0
-
-
-
-    for _, row in checklist.iterrows():
-
-
-        if row["status"] == "Completed":
-
-            completed += 1
-
-
-        elif row["status"] == "In Progress":
-
-            in_progress += 1
-
-
-        else:
-
-            pending += 1
-
-
+    # =====================================================
 
     elements.append(
 
@@ -627,8 +552,6 @@ def create_pdf(vehicle, checklist):
 
     )
 
-
-
     status_table = Table(
 
         [
@@ -636,26 +559,21 @@ def create_pdf(vehicle, checklist):
             [
 
                 "Completed",
-
                 str(completed),
 
                 "In Progress",
-
                 str(in_progress),
 
                 "Pending",
-
                 str(pending)
 
             ]
 
         ],
 
-        colWidths=[70,40,70,40,50,40]
+        colWidths=[60,30,65,30,45,30]
 
     )
-
-
 
     status_table.setStyle(
 
@@ -671,44 +589,67 @@ def create_pdf(vehicle, checklist):
                     colors.black
                 ),
 
-
                 (
                     "BACKGROUND",
                     (0,0),
                     (0,0),
-                    colors.lightgrey
+                    colors.HexColor("#DDDDDD")
                 ),
-
 
                 (
                     "BACKGROUND",
                     (2,0),
                     (2,0),
-                    colors.lightgrey
+                    colors.HexColor("#DDDDDD")
                 ),
-
 
                 (
                     "BACKGROUND",
                     (4,0),
                     (4,0),
-                    colors.lightgrey
+                    colors.HexColor("#DDDDDD")
                 ),
-
 
                 (
                     "FONTNAME",
                     (0,0),
-                    (-1,-1),
+                    (0,0),
                     "Helvetica-Bold"
                 ),
 
+                (
+                    "FONTNAME",
+                    (2,0),
+                    (2,0),
+                    "Helvetica-Bold"
+                ),
+
+                (
+                    "FONTNAME",
+                    (4,0),
+                    (4,0),
+                    "Helvetica-Bold"
+                ),
 
                 (
                     "FONTSIZE",
                     (0,0),
                     (-1,-1),
-                    7
+                    6
+                ),
+
+                (
+                    "ALIGN",
+                    (0,0),
+                    (-1,-1),
+                    "CENTER"
+                ),
+
+                (
+                    "VALIGN",
+                    (0,0),
+                    (-1,-1),
+                    "MIDDLE"
                 )
 
             ]
@@ -717,23 +658,15 @@ def create_pdf(vehicle, checklist):
 
     )
 
-
     elements.append(status_table)
 
-
-
     elements.append(
-
-        Spacer(1,8)
-
+        Spacer(1,4)
     )
 
-
-
-    # =================================================
+    # =====================================================
     # OBSERVATIONS
-    # =================================================
-
+    # =====================================================
 
     elements.append(
 
@@ -747,70 +680,129 @@ def create_pdf(vehicle, checklist):
 
     )
 
+    observations_table = Table(
 
+        [
 
-    elements.append(
+            [" "],
 
-        Paragraph(
+            [" "]
 
-            "_________________________________________________________<br/>"
-            "_________________________________________________________",
+        ],
 
-            small_style
+        colWidths=[530],
+
+        rowHeights=[14,14]
+
+    )
+
+    observations_table.setStyle(
+
+        TableStyle(
+
+            [
+
+                (
+                    "GRID",
+                    (0,0),
+                    (-1,-1),
+                    0.25,
+                    colors.black
+                )
+
+            ]
 
         )
 
     )
 
-
+    elements.append(observations_table)
 
     elements.append(
+        Spacer(1,4)
+    )
 
-        Spacer(1,10)
+    # =====================================================
+    # SIGNATURE
+    # =====================================================
+
+    signature_table = Table(
+
+        [
+
+            [
+
+                "Authorized Signature:",
+
+                "________________________",
+
+                "Date:",
+
+                "____________"
+
+            ]
+
+        ],
+
+        colWidths=[90,150,35,60]
 
     )
 
+    signature_table.setStyle(
 
+        TableStyle(
 
-    elements.append(
+            [
 
-        Paragraph(
+                (
+                    "FONTNAME",
+                    (0,0),
+                    (0,0),
+                    "Helvetica-Bold"
+                ),
 
-            "Authorized Signature: ______________________________",
+                (
+                    "FONTNAME",
+                    (2,0),
+                    (2,0),
+                    "Helvetica-Bold"
+                ),
 
-            small_style
+                (
+                    "FONTSIZE",
+                    (0,0),
+                    (-1,-1),
+                    6
+                ),
+
+                (
+                    "BOTTOMPADDING",
+                    (0,0),
+                    (-1,-1),
+                    0
+                ),
+
+                (
+                    "TOPPADDING",
+                    (0,0),
+                    (-1,-1),
+                    0
+                )
+
+            ]
 
         )
 
     )
 
+    elements.append(signature_table)
 
-    elements.append(
-
-        Spacer(1,5)
-
-    )
-
-
-    elements.append(
-
-        Paragraph(
-
-            "Date: ___________________",
-
-            small_style
-
-        )
-
-    )
-
-
+    # =====================================================
+    # BUILD PDF
+    # =====================================================
 
     doc.build(elements)
 
-
-
     buffer.seek(0)
-
 
     return buffer
