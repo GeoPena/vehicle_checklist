@@ -60,7 +60,7 @@ def create_pdf(vehicle, checklist):
 
         parent=styles["Heading2"],
 
-        fontSize=8,
+        fontSize=10,
 
         spaceBefore=2,
 
@@ -74,7 +74,7 @@ def create_pdf(vehicle, checklist):
 
         parent=styles["Normal"],
 
-        fontSize=5.5,
+        fontSize=6,
 
         leading=6
 
@@ -90,7 +90,7 @@ def create_pdf(vehicle, checklist):
 
         Paragraph(
 
-            "AUTO TECK LLC",
+            "AUTOTECK 24 LLC",
 
             title_style
 
@@ -196,7 +196,7 @@ def create_pdf(vehicle, checklist):
                 ("FONTNAME",(2,0),(2,-1),"Helvetica-Bold"),
                 ("FONTNAME",(4,0),(4,-1),"Helvetica-Bold"),
 
-                ("FONTSIZE",(0,0),(-1,-1),6),
+                ("FONTSIZE",(0,0),(-1,-1),8),
 
                 ("VALIGN",(0,0),(-1,-1),"MIDDLE")
 
@@ -350,7 +350,7 @@ def create_pdf(vehicle, checklist):
                 "FONTSIZE",
                 (0, 0),
                 (-1, -1),
-                6
+                7.5
             ),
 
             (
@@ -385,14 +385,14 @@ def create_pdf(vehicle, checklist):
                 "TOPPADDING",
                 (0, 0),
                 (-1, -1),
-                2
+                2.5
             ),
 
             (
                 "BOTTOMPADDING",
                 (0, 0),
                 (-1, -1),
-                2
+                2.5
             ),
 
             (
